@@ -1,0 +1,45 @@
+name: Deploy to Somee.com via FTP
+
+on:
+  push:
+    # Kích hoạt workflow khi có push lên nhánh main
+    branches:
+      - main
+  # Tùy chọn: cho phép chạy workflow thủ công từ giao diện GitHub
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # 1. Checkout mã nguồn
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # 2. (Tùy chọn) Bước Build: Nếu bạn có ứng dụng cần build (ví dụ: ASP.NET, React, Vue,...)
+      # Thay thế bằng các bước build phù hợp với công nghệ của bạn.
+      # Ví dụ:
+      # - name: Setup .NET
+      #   uses: actions/setup-dotnet@v4
+      #   with:
+      #     dotnet-version: '6.0.x' 
+      # - name: Build
+      #   run: dotnet publish --configuration Release --output build
+        
+      # 3. Triển khai qua FTP
+      - name: FTP Deploy to Somee.com
+        uses: SamKirkland/FTP-Deploy-Action@v2
+        with:
+          # Địa chỉ máy chủ FTP của Somee.com (thường là ftp://tên_website_của_bạn.somee.com)
+          server: ${{ secrets.FTP_HOST }}
+          # Tên người dùng FTP (thường là tên tài khoản Somee.com của bạn)
+          username: ${{ secrets.FTP_USER }}
+          # Mật khẩu FTP
+          password: ${{ secrets.FTP_PW }}
+          # Thư mục trên server Somee.com để upload file lên (thường là /wwwroot/ hoặc thư mục tên miền của bạn)
+          # KIỂM TRA CHÍNH XÁC thư mục này trong Control Panel của Somee.com!
+          server-directory: /wwwroot/ 
+          # Thư mục trong repo GitHub chứa các file đã build/sẵn sàng để deploy
+          # Nếu bạn có bước Build, hãy trỏ đến thư mục đầu ra (output) của bước Build đó.
+          local-dir: ./ # Giả sử file của bạn nằm ở thư mục gốc (root) của repo

@@ -1,33 +1,27 @@
-name: Deploy to Somee.com via FTP
-
-on:
-  push:
-    # Kích hoạt workflow khi có push lên nhánh 'main'
-    branches:
-      - main
-  # Cho phép chạy workflow thủ công từ giao diện GitHub
-  workflow_dispatch:
-
+on: push
+name: 🚀 Deploy website on push
 jobs:
-  deploy:
-    # Chạy trên môi trường Ubuntu mới nhất (có sẵn lftp)
+  web-deploy:
+    name: 🎉 Deploy
     runs-on: ubuntu-latest
     
     steps:
-      # 1. Checkout mã nguồn
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      # 2. Triển khai qua lftp Shell Command
-      - name: Deploy to Somee.com via lftp
-        run: |
-          # Bắt đầu lệnh lftp (Sử dụng -c để thực hiện chuỗi lệnh)
-          # open -u [username],[password] [host]
-          # mirror -R: Đồng bộ hóa (upload) từ thư mục cục bộ sang thư mục remote
-          # ./ : Thư mục nguồn cục bộ (root của repo)
-          # /www.hoangquocdat.somee.com/ : Thư mục đích trên Somee.com
-          lftp -c "open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PW }} ${{ secrets.FTP_HOST }}; \
-          mirror -R \
-          --delete \
-          ./ \
-          /www.hoangquocdat.somee.com/"
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4
+      
+    - name: 📂 Sync files
+      # Định nghĩa env ở cấp độ STEP
+      env:
+        FTP_HOST: ${{ secrets.FTP_HOST }}
+        FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+        FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        DEPLOY_PATH: /var/www/html/
+      
+      # Ví dụ dùng run để kiểm tra biến
+      run: |
+        echo "Deploy đến $FTP_HOST tại $DEPLOY_PATH"
+        # Sau đó, bạn dùng các biến này trong 'uses' bên dưới
+        # uses: SamKirkland/FTP-Deploy-Action@v4.3.1
+        # với:
+        #   server: ${{ env.FTP_HOST }} # Hoặc trực tiếp dùng secrets/env
+        # ...

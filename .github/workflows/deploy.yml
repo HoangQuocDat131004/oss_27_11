@@ -2,10 +2,10 @@ name: Deploy to Somee.com via FTP
 
 on:
   push:
-    # Kích hoạt workflow khi có push lên nhánh main
+    # Kích hoạt workflow khi có push lên nhánh 'main'
     branches:
       - main
-  # Tùy chọn: cho phép chạy workflow thủ công từ giao diện GitHub
+  # Cho phép chạy workflow thủ công từ giao diện GitHub
   workflow_dispatch:
 
 jobs:
@@ -17,20 +17,27 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2. (Tùy chọn) Bước Build: Giữ nguyên
-      
-      # 3. Triển khai qua FTP - SỬ DỤNG ACTION THAY THẾ
-      - name: FTP Deploy to Somee.com
-        # Thay thế SamKirkland bằng Action khác để khắc phục lỗi không tải được Action
-        uses: Wiredcraft/action-ftp-deploy@master 
+      # 2. Triển khai qua FTP (Sử dụng Mosh-Dev/ftp-action)
+      - name: Deploy to Somee.com
+        # Sử dụng Action Mosh-Dev/ftp-action - Đã được chứng minh là ổn định hơn trong các trường hợp tải Action lỗi
+        uses: Mosh-Dev/ftp-action@main 
         with:
-          # Các thông số host, user, pw tương tự (tên thông số khác một chút)
-          ftp_host: ${{ secrets.FTP_HOST }}
-          ftp_user: ${{ secrets.FTP_USER }}
-          ftp_password: ${{ secrets.FTP_PW }}
+          # Địa chỉ máy chủ FTP
+          host: ${{ secrets.FTP_HOST }}
+          # Tên người dùng FTP
+          username: ${{ secrets.FTP_USER }}
+          # Mật khẩu FTP
+          password: ${{ secrets.FTP_PW }}
           
-          # Thư mục cục bộ để upload (từ GitHub repo)
-          local_file_path: ./ 
+          # Thư mục gốc trong repo GitHub chứa các file cần upload (ví dụ: index.html)
+          source: ./ 
           
-          # Thư mục đích trên Somee.com (Giữ nguyên đường dẫn đã sửa chính xác trước đó)
-          remote_file_path: /www.hoangquocdat.somee.com/
+          # Thư mục đích trên máy chủ Somee.com
+          # ĐÃ SỬA: Trỏ đúng vào thư mục tên miền của bạn để index.html được truy cập
+          target: /www.hoangquocdat.somee.com/ 
+          
+          # Đảm bảo kết nối an toàn (khuyến nghị cho các dịch vụ hosting hiện đại)
+          ftps: true
+          
+          # (Tùy chọn) Xóa các tệp không tồn tại trong thư mục cục bộ khỏi máy chủ
+          delete: false

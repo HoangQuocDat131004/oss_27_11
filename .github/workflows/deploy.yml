@@ -29,7 +29,7 @@ jobs:
         
       # 3. Triển khai qua FTP
       - name: FTP Deploy to Somee.com
-        uses: SamKirkland/FTP-Deploy-Action@v2
+        uses: SamKirkland/FTP-Deploy-Action@v4
         with:
           # Địa chỉ máy chủ FTP của Somee.com (thường là ftp://tên_website_của_bạn.somee.com)
           server: ${{ secrets.FTP_HOST }}
@@ -39,7 +39,7 @@ jobs:
           password: ${{ secrets.FTP_PW }}
           # Thư mục trên server Somee.com để upload file lên (thường là /wwwroot/ hoặc thư mục tên miền của bạn)
           # KIỂM TRA CHÍNH XÁC thư mục này trong Control Panel của Somee.com!
-          server-directory: /wwwroot/ 
+          server-directory: /www.hoangquocdat.somee.com/ 
           # Thư mục trong repo GitHub chứa các file đã build/sẵn sàng để deploy
           # Nếu bạn có bước Build, hãy trỏ đến thư mục đầu ra (output) của bước Build đó.
           local-dir: ./ # Giả sử file của bạn nằm ở thư mục gốc (root) của repo

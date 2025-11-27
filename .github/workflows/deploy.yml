@@ -17,29 +17,20 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2. (Tùy chọn) Bước Build: Nếu bạn có ứng dụng cần build (ví dụ: ASP.NET, React, Vue,...)
-      # Thay thế bằng các bước build phù hợp với công nghệ của bạn.
-      # Ví dụ:
-      # - name: Setup .NET
-      #   uses: actions/setup-dotnet@v4
-      #   with:
-      #     dotnet-version: '6.0.x' 
-      # - name: Build
-      #   run: dotnet publish --configuration Release --output build
-        
-      # 3. Triển khai qua FTP
+      # 2. (Tùy chọn) Bước Build: Giữ nguyên
+      
+      # 3. Triển khai qua FTP - SỬ DỤNG ACTION THAY THẾ
       - name: FTP Deploy to Somee.com
-        uses: SamKirkland/FTP-Deploy-Action@07a213e2f9cc7473722956f2e8206d2898c1995a
+        # Thay thế SamKirkland bằng Action khác để khắc phục lỗi không tải được Action
+        uses: Wiredcraft/action-ftp-deploy@master 
         with:
-          # Địa chỉ máy chủ FTP của Somee.com (thường là ftp://tên_website_của_bạn.somee.com)
-          server: ${{ secrets.FTP_HOST }}
-          # Tên người dùng FTP (thường là tên tài khoản Somee.com của bạn)
-          username: ${{ secrets.FTP_USER }}
-          # Mật khẩu FTP
-          password: ${{ secrets.FTP_PW }}
-          # Thư mục trên server Somee.com để upload file lên (thường là /wwwroot/ hoặc thư mục tên miền của bạn)
-          # KIỂM TRA CHÍNH XÁC thư mục này trong Control Panel của Somee.com!
-          server-directory: /www.hoangquocdat.somee.com/ 
-          # Thư mục trong repo GitHub chứa các file đã build/sẵn sàng để deploy
-          # Nếu bạn có bước Build, hãy trỏ đến thư mục đầu ra (output) của bước Build đó.
-          local-dir: ./ # Giả sử file của bạn nằm ở thư mục gốc (root) của repo
+          # Các thông số host, user, pw tương tự (tên thông số khác một chút)
+          ftp_host: ${{ secrets.FTP_HOST }}
+          ftp_user: ${{ secrets.FTP_USER }}
+          ftp_password: ${{ secrets.FTP_PW }}
+          
+          # Thư mục cục bộ để upload (từ GitHub repo)
+          local_file_path: ./ 
+          
+          # Thư mục đích trên Somee.com (Giữ nguyên đường dẫn đã sửa chính xác trước đó)
+          remote_file_path: /www.hoangquocdat.somee.com/

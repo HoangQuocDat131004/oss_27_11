@@ -10,6 +10,7 @@ on:
 
 jobs:
   deploy:
+    # Chạy trên môi trường Ubuntu mới nhất (có sẵn lftp)
     runs-on: ubuntu-latest
     
     steps:
@@ -17,27 +18,16 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2. Triển khai qua FTP (Sử dụng Mosh-Dev/ftp-action)
-      - name: Deploy to Somee.com
-        # Sử dụng Action Mosh-Dev/ftp-action - Đã được chứng minh là ổn định hơn trong các trường hợp tải Action lỗi
-        uses: Mosh-Dev/ftp-action@main 
-        with:
-          # Địa chỉ máy chủ FTP
-          host: ${{ secrets.FTP_HOST }}
-          # Tên người dùng FTP
-          username: ${{ secrets.FTP_USER }}
-          # Mật khẩu FTP
-          password: ${{ secrets.FTP_PW }}
-          
-          # Thư mục gốc trong repo GitHub chứa các file cần upload (ví dụ: index.html)
-          source: ./ 
-          
-          # Thư mục đích trên máy chủ Somee.com
-          # ĐÃ SỬA: Trỏ đúng vào thư mục tên miền của bạn để index.html được truy cập
-          target: /www.hoangquocdat.somee.com/ 
-          
-          # Đảm bảo kết nối an toàn (khuyến nghị cho các dịch vụ hosting hiện đại)
-          ftps: true
-          
-          # (Tùy chọn) Xóa các tệp không tồn tại trong thư mục cục bộ khỏi máy chủ
-          delete: false
+      # 2. Triển khai qua lftp Shell Command
+      - name: Deploy to Somee.com via lftp
+        run: |
+          # Bắt đầu lệnh lftp (Sử dụng -c để thực hiện chuỗi lệnh)
+          # open -u [username],[password] [host]
+          # mirror -R: Đồng bộ hóa (upload) từ thư mục cục bộ sang thư mục remote
+          # ./ : Thư mục nguồn cục bộ (root của repo)
+          # /www.hoangquocdat.somee.com/ : Thư mục đích trên Somee.com
+          lftp -c "open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PW }} ${{ secrets.FTP_HOST }}; \
+          mirror -R \
+          --delete \
+          ./ \
+          /www.hoangquocdat.somee.com/"

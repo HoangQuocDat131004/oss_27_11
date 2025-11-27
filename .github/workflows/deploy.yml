@@ -29,7 +29,7 @@ jobs:
         
       # 3. Triển khai qua FTP
       - name: FTP Deploy to Somee.com
-        uses: SamKirkland/FTP-Deploy-Action@v4
+        uses: SamKirkland/FTP-Deploy-Action@07a213e2f9cc7473722956f2e8206d2898c1995a
         with:
           # Địa chỉ máy chủ FTP của Somee.com (thường là ftp://tên_website_của_bạn.somee.com)
           server: ${{ secrets.FTP_HOST }}
